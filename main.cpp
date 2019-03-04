@@ -31,18 +31,21 @@ const float toRadians = (float)M_PI / 180.0f;
 const char *vShader = "														\n\
 #version 330																\n\
 layout (location = 0) in vec3 pos;											\n\
+out vec4 vCol;																\n\
 uniform mat4 model;															\n\
 void main()																	\n\
 {																			\n\
 	gl_Position = model * vec4(pos, 1.0);									\n\
+	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0);								\n\
 }";
 
 const char *fShader = "														\n\
 #version 330																\n\
+in vec4 vCol;																\n\
 out vec4 colour;															\n\
 void main()																	\n\
 {																			\n\
-	colour = vec4(1.0, 0.0, 0.0, 1.0);										\n\
+	colour = vCol;															\n\
 }";
 
 static void create_triangle()
@@ -126,7 +129,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGui OpenGL3 example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 1024, "ImGui OpenGL3 example", NULL, NULL);
     glfwMakeContextCurrent(window);
 
 	// Setup GLEW
@@ -210,8 +213,8 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		glUseProgram(shader);
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(triangle_offset, 0.0f, 0.0f));
-		model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		//model = glm::translate(model, glm::vec3(triangle_offset, 0.0f, 0.0f));
+		//model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
 		glUniformMatrix4fv(uniform_model, 1, GL_FALSE, glm::value_ptr(model));
 
