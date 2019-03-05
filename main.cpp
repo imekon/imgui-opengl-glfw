@@ -17,7 +17,7 @@
 
 using namespace std;
 
-GLuint VAO, VBO, shader, uniform_model;
+GLuint VAO, VBO, IBO, shader, uniform_model;
 
 bool direction = true;
 float triangle_offset = 0.0f;
@@ -50,15 +50,28 @@ void main()																	\n\
 
 static void create_triangle()
 {
+	GLuint indices[] =
+	{
+		0, 3, 1,
+		1, 3, 2,
+		2, 3, 0,
+		0, 1, 2
+	};
+
 	GLfloat vertices[] =
 	{
 		-1.0f, -1.0f, 0.0f,
+		 0.0f, -1.0f, 1.0f,
 		 1.0f, -1.0f, 0.0f,
 		 0.0f,  1.0f, 0.0f
 	};
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -68,6 +81,8 @@ static void create_triangle()
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glBindVertexArray(0);
 }
 
@@ -129,7 +144,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    GLFWwindow* window = glfwCreateWindow(1280, 1024, "ImGui OpenGL3 example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "ImGui OpenGL3 example", NULL, NULL);
     glfwMakeContextCurrent(window);
 
 	// Setup GLEW
@@ -206,24 +221,29 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
+		glEnable(GL_DEPTH_TEST);
+
         glViewport(0, 0, width, height);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shader);
 
 		glm::mat4 model(1.0f);
 		//model = glm::translate(model, glm::vec3(triangle_offset, 0.0f, 0.0f));
-		//model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
 		glUniformMatrix4fv(uniform_model, 1, GL_FALSE, glm::value_ptr(model));
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		glUseProgram(0);
 
         ImGui::Render();
+
         glfwSwapBuffers(window);
     }
 
