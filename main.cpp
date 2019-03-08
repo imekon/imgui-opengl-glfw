@@ -17,7 +17,7 @@
 
 using namespace std;
 
-GLuint VAO, VBO, IBO, shader, uniform_model;
+GLuint VAO, VBO, IBO, shader, uniform_model, uniform_projection;
 
 bool direction = true;
 float triangle_offset = 0.0f;
@@ -33,9 +33,10 @@ const char *vShader = "														\n\
 layout (location = 0) in vec3 pos;											\n\
 out vec4 vCol;																\n\
 uniform mat4 model;															\n\
+uniform mat4 projection;													\n\
 void main()																	\n\
 {																			\n\
-	gl_Position = model * vec4(pos, 1.0);									\n\
+	gl_Position = projection * model * vec4(pos, 1.0);						\n\
 	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0);								\n\
 }";
 
@@ -127,6 +128,7 @@ void compile_shaders()
 	glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
 
 	uniform_model = glGetUniformLocation(shader, "model");
+	uniform_projection = glGetUniformLocation(shader, "projection");
 }
 
 static void error_callback(int error, const char* description)
@@ -134,8 +136,13 @@ static void error_callback(int error, const char* description)
 	cout << "Error " << description << endl;
 }
 
+int width, height;
+
 int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+	width = 800;
+	height = 600;
+
     // Setup window
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -218,7 +225,6 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         }
 
         // Rendering
-        int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
 		glEnable(GL_DEPTH_TEST);
@@ -229,10 +235,13 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		glUseProgram(shader);
 
+		glm::mat4 projection = glm::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+
 		glm::mat4 model(1.0f);
-		//model = glm::translate(model, glm::vec3(triangle_offset, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
 		model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
+		glUniformMatrix4fv(uniform_projection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniform_model, 1, GL_FALSE, glm::value_ptr(model));
 
 		glBindVertexArray(VAO);
