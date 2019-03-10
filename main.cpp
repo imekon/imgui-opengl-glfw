@@ -22,13 +22,6 @@
 
 using namespace std;
 
-bool direction = true;
-float triangle_offset = 0.0f;
-float triangle_max_offset = 0.7f;
-float triangle_increment = 0.005f;
-
-float current_angle = 0.0f;
-
 const float toRadians = (float)M_PI / 180.0f;
 
 vector<Shader *> shaders;
@@ -112,18 +105,6 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     // Main loop
     while (!window.getShouldClose())
     {
-		if (direction)
-			triangle_offset += triangle_increment;
-		else
-			triangle_offset -= triangle_increment;
-
-		if (abs(triangle_offset) >= triangle_max_offset)
-			direction = !direction;
-
-		current_angle += 1.0f;
-		if (current_angle > 360.0f)
-			current_angle = 0.0f;
-
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
 
@@ -177,7 +158,6 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
-		model = glm::rotate(model, current_angle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
 		glUniformMatrix4fv(uniform_projection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniform_model, 1, GL_FALSE, glm::value_ptr(model));
