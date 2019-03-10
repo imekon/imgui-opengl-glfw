@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include <iostream>
+#include <vector>
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 #include <GL/glew.h>
@@ -15,9 +16,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Mesh.h"
+
 using namespace std;
 
-GLuint VAO, VBO, IBO, shader, uniform_model, uniform_projection;
+GLuint shader, uniform_model, uniform_projection;
 
 bool direction = true;
 float triangle_offset = 0.0f;
@@ -27,6 +30,8 @@ float triangle_increment = 0.005f;
 float current_angle = 0.0f;
 
 const float toRadians = (float)M_PI / 180.0f;
+
+vector<Mesh *> meshes;
 
 const char *vShader = "														\n\
 #version 330																\n\
@@ -67,24 +72,9 @@ static void create_triangle()
 		 0.0f,  1.0f, 0.0f
 	};
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
+	auto mesh = new Mesh();
+	mesh->createMesh(vertices, indices, 12, 12);
+	meshes.push_back(mesh);
 }
 
 void add_shader(GLuint program, const char *shader_code, GLenum shader_type)
@@ -244,11 +234,9 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		glUniformMatrix4fv(uniform_projection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniform_model, 1, GL_FALSE, glm::value_ptr(model));
 
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		for (auto mesh : meshes)
+			mesh->renderMesh();
+
 		glUseProgram(0);
 
         ImGui::Render();
