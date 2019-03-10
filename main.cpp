@@ -18,6 +18,7 @@
 
 #include "Shader.h"
 #include "Mesh.h"
+#include "Window.h"
 
 using namespace std;
 
@@ -64,8 +65,6 @@ static void error_callback(int error, const char* description)
 	cout << "Error " << description << endl;
 }
 
-int width, height;
-
 void create_shaders()
 {
 	auto shader = new Shader();
@@ -76,26 +75,20 @@ void create_shaders()
 
 int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	width = 800;
-	height = 600;
-
     // Setup window
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         return 1;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "ImGui OpenGL3 example", NULL, NULL);
-    glfwMakeContextCurrent(window);
+
+	Window window(800, 600);
+	window.initialise();
 
 	// Setup GLEW
 	if (glewInit() != GLEW_OK)
 		return -1;
 
     // Setup ImGui binding
-    ImGui_ImplGlfwGL3_Init(window, true);
+    ImGui_ImplGlfwGL3_Init(window.getWindow(), true);
 
     // Load Fonts
     // (there is a default font, this is only if you want to change it. see extra_fonts/README.txt for more details)
@@ -117,7 +110,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     ImVec4 clear_color = ImColor(32, 32, 32);
 
     // Main loop
-    while (!glfwWindowShouldClose(window))
+    while (!window.getShouldClose())
     {
 		if (direction)
 			triangle_offset += triangle_increment;
@@ -163,7 +156,9 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         }
 
         // Rendering
-        glfwGetFramebufferSize(window, &width, &height);
+		int width, height;
+		width = window.getBufferWidth();
+		height = window.getBufferHeight();
 
 		glEnable(GL_DEPTH_TEST);
 
@@ -193,7 +188,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
         ImGui::Render();
 
-        glfwSwapBuffers(window);
+		window.swapBuffers();
     }
 
     // Cleanup
