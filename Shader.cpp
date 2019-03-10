@@ -20,6 +20,14 @@ bool Shader::createFromString(const char * vertexCode, const char * fragmentCode
 	return compileShader(vertexCode, fragmentCode);
 }
 
+bool Shader::createFromFiles(const char * vertexFilename, const char * fragmentFilename)
+{
+	auto vertexCode = readFile(vertexFilename);
+	auto fragmentCode = readFile(fragmentFilename);
+
+	return compileShader(vertexCode.c_str(), fragmentCode.c_str());
+}
+
 GLuint Shader::getProjectionLocation()
 {
 	return uniform_projection;
@@ -112,5 +120,25 @@ bool Shader::addShader(GLuint program, const char *shader_code, GLenum shader_ty
 	}
 	glAttachShader(program, shader);
 	return true;
+}
+
+string Shader::readFile(const char * filename)
+{
+	string content;
+	ifstream stream(filename, ios::in);
+
+	if (!stream.is_open())
+		return "";
+
+	string line;
+
+	while (!stream.eof())
+	{
+		getline(stream, line);
+		content.append(line + "\n");
+	}
+
+	stream.close();
+	return content;
 }
 

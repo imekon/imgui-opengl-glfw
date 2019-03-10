@@ -33,26 +33,8 @@ const float toRadians = (float)M_PI / 180.0f;
 vector<Shader *> shaders;
 vector<Mesh *> meshes;
 
-const char *vertexShader = "												\n\
-#version 330																\n\
-layout (location = 0) in vec3 pos;											\n\
-out vec4 vCol;																\n\
-uniform mat4 model;															\n\
-uniform mat4 projection;													\n\
-void main()																	\n\
-{																			\n\
-	gl_Position = projection * model * vec4(pos, 1.0);						\n\
-	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0);								\n\
-}";
-
-const char *fragmentShader = "														\n\
-#version 330																\n\
-in vec4 vCol;																\n\
-out vec4 colour;															\n\
-void main()																	\n\
-{																			\n\
-	colour = vCol;															\n\
-}";
+const char *vertexShader = "shaders/shader.vert";
+const char *fragmentShader = "shaders/shader.frag";
 
 static void create_meshes()
 {
@@ -87,7 +69,7 @@ int width, height;
 void create_shaders()
 {
 	auto shader = new Shader();
-	auto result = shader->createFromString(vertexShader, fragmentShader);
+	auto result = shader->createFromFiles(vertexShader, fragmentShader);
 	if (result)
 		shaders.push_back(shader);
 }
