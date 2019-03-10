@@ -157,6 +157,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
         // Rendering
 		int width, height;
+		window.getBufferSize();
 		width = window.getBufferWidth();
 		height = window.getBufferHeight();
 

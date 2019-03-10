@@ -23,5 +23,10 @@ void Window::initialise()
 	window = glfwCreateWindow(width, height, "ImGui OpenGL3 example", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
+	getBufferSize();
+}
+
+void Window::getBufferSize()
+{
 	glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
 }

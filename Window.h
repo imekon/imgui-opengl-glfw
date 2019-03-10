@@ -12,6 +12,7 @@ public:
 
 	void initialise();
 	GLFWwindow *getWindow() { return window; }
+	void getBufferSize();
 	GLint getBufferWidth() { return bufferWidth; }
 	GLint getBufferHeight() { return bufferHeight; }
 
