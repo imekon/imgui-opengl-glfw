@@ -13,8 +13,8 @@ public:
 	void initialise();
 	GLFWwindow *getWindow() { return window; }
 	void getBufferSize();
-	GLint getBufferWidth() { return bufferWidth; }
-	GLint getBufferHeight() { return bufferHeight; }
+	const GLint getBufferWidth() const { return bufferWidth; }
+	const GLint getBufferHeight() const { return bufferHeight; }
 
 	bool getShouldClose() { return glfwWindowShouldClose(window); }
 	void swapBuffers() { glfwSwapBuffers(window); }

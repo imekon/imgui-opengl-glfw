@@ -14,8 +14,8 @@ public:
 
 	bool createFromString(const char *vertexCode, const char *fragmentCode);
 	bool createFromFiles(const char *vertexFilename, const char *fragmentFilename);
-	GLuint getProjectionLocation();
-	GLuint getModelLocation();
+	const GLuint getProjectionLocation() const { return uniform_projection; }
+	const GLuint getModelLocation() const { return uniform_model; }
 	void useShader();
 	void clearShader();
 

@@ -1,3 +1,4 @@
+#include "Log.h"
 #include "Shader.h"
 
 using namespace std;
@@ -28,16 +29,6 @@ bool Shader::createFromFiles(const char * vertexFilename, const char * fragmentF
 	return compileShader(vertexCode.c_str(), fragmentCode.c_str());
 }
 
-GLuint Shader::getProjectionLocation()
-{
-	return uniform_projection;
-}
-
-GLuint Shader::getModelLocation()
-{
-	return uniform_model;
-}
-
 void Shader::useShader()
 {
 	glUseProgram(id);
@@ -60,7 +51,7 @@ bool Shader::compileShader(const char *vertexCode, const char *fragmentCode)
 	id = glCreateProgram();
 	if (!id)
 	{
-		cout << "Failed to create shader" << endl;
+		Log::log("Failed to create shader");
 		return false;
 	}
 
@@ -76,7 +67,7 @@ bool Shader::compileShader(const char *vertexCode, const char *fragmentCode)
 	if (!result)
 	{
 		glGetProgramInfoLog(id, sizeof(eLog), nullptr, eLog);
-		cout << "Error linking shader: " << eLog << endl;
+		Log::log(eLog);
 		return false;
 	}
 
@@ -86,7 +77,7 @@ bool Shader::compileShader(const char *vertexCode, const char *fragmentCode)
 	if (!result)
 	{
 		glGetProgramInfoLog(id, sizeof(eLog), nullptr, eLog);
-		cout << "Error validating shader: " << eLog << endl;
+		Log::log(eLog);
 		return false;
 	}
 
@@ -115,7 +106,7 @@ bool Shader::addShader(GLuint program, const char *shader_code, GLenum shader_ty
 	if (!result)
 	{
 		glGetShaderInfoLog(shader, sizeof(eLog), nullptr, eLog);
-		cout << "Error compiling shader: " << eLog << endl;
+		Log::log(eLog);
 		return false;
 	}
 	glAttachShader(program, shader);

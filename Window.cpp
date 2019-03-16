@@ -1,11 +1,11 @@
 #include "Window.h"
 
-Window::Window() : width(width), height(height)
+Window::Window() : width(width), height(height), bufferWidth(0), bufferHeight(0)
 {
 }
 
 
-Window::Window(GLint width, GLint height) : width(width), height(height)
+Window::Window(GLint width, GLint height) : width(width), height(height), bufferWidth(0), bufferHeight(0)
 {
 }
 
